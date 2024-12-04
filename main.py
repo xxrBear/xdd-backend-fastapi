@@ -14,6 +14,6 @@ app.add_middleware(
     allow_methods=["*"],  # 允许所有 HTTP 方法 (GET, POST, DELETE 等)
     allow_headers=["*"],  # 允许所有请求头
 )
-app.add_middleware(SessionMiddleware, secret_key="your-secret-key")
+app.add_middleware(SessionMiddleware, secret_key='secret')
 
 app.add_exception_handler(ValidateError, validate_exception_handler)

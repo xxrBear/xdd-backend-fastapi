@@ -3,7 +3,7 @@ import os
 from sqlalchemy.engine import reflection
 from sqlmodel import create_engine, SQLModel
 
-from models.user import User
+from models import *
 
 # 数据库文件的相对路径
 db_path = os.path.dirname(os.path.abspath(__file__)) + 'yudada-backend.db'
