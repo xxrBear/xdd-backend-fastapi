@@ -1,10 +1,7 @@
 from datetime import datetime
 
 from fastapi.encoders import jsonable_encoder
-from pydantic import field_validator
 from sqlmodel import SQLModel, Field
-
-from common.execptions import ValidateError
 
 
 class UserBase(SQLModel):
@@ -49,13 +46,6 @@ class UserCreate(SQLModel):
     userAccount: str = Field(min_length=4, max_length=32, description='账号')
     userPassword: str = Field(min_length=8, max_length=32, description='密码')
     checkPassword: str = Field(min_length=8, max_length=32, description='检验密码')
-
-    # 不推荐使用，因为不能进行数据库查询
-    # @field_validator('checkPassword')
-    # def validate_password(cls, check_password, values):
-    #     user_password = values.data.get('userPassword')
-    #     if user_password != check_password:
-    #         raise ValidateError('两次输入的密码不一致')
 
     def to_dict(self):
         return {
