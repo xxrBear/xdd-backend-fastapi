@@ -50,15 +50,23 @@ class UserCreate(SQLModel):
     userPassword: str = Field(min_length=8, max_length=32, description='密码')
     checkPassword: str = Field(min_length=8, max_length=32, description='检验密码')
 
-    @field_validator('checkPassword')
-    def validate_password(cls, check_password, values):
-        user_password = values.data.get('userPassword')
-        if user_password != check_password:
-            raise ValidateError('两次输入的密码不一致')
+    # 不推荐使用，因为不能进行数据库查询
+    # @field_validator('checkPassword')
+    # def validate_password(cls, check_password, values):
+    #     user_password = values.data.get('userPassword')
+    #     if user_password != check_password:
+    #         raise ValidateError('两次输入的密码不一致')
 
-    # ---------------------------------------------
-    # 依据 field_validator 装饰器增加验证逻辑。不重复写了
-    # ---------------------------------------------
+    def to_dict(self):
+        return {
+            'user_account': self.userAccount,
+            'user_password': self.userPassword,
+        }
+
+
+class UserLogin(SQLModel):
+    userAccount: str = Field(min_length=4, max_length=32, description='账号')
+    userPassword: str = Field(min_length=8, max_length=32, description='密码')
 
     def to_dict(self):
         return {

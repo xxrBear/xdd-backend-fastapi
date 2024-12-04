@@ -1,9 +1,16 @@
+import os
+
 from sqlalchemy.engine import reflection
 from sqlmodel import create_engine, SQLModel
 
 from models.user import User
 
-engine = create_engine("sqlite:///./yudada.db", echo=True)
+# 数据库文件的相对路径
+db_path = os.path.dirname(os.path.abspath(__file__)) + 'yudada-backend.db'
+
+# 使用 SQLAlchemy 的 SQLite URL 格式
+SQLALCHEMY_DATABASE_URL = f"sqlite:///{db_path}"
+engine = create_engine(SQLALCHEMY_DATABASE_URL, echo=True)
 
 
 # 初始化数据库表

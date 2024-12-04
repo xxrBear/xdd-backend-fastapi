@@ -1,10 +1,11 @@
 from fastapi import APIRouter
 from starlette.requests import Request
 
+from common import state
 from api.deps import SessionDep
 from common.resp import json_data
-from common import state
-from models.user import UserCreate, User
+from models.user import UserCreate, User, UserLogin
+from crud import user
 
 router = APIRouter()
 
@@ -16,22 +17,21 @@ def register(session: SessionDep, user_create: UserCreate):
     :param user_create:
     :return: JSONResponse
     """
-    user_obj = User(**user_create.to_dict())
-    session.add(user_obj)
-    session.commit()
-    session.refresh(user_obj)
 
+    user_obj = user.validate_register_info(session, user_create)
     return json_data(data=user_obj.to_dict())
 
 
 @router.post('/login')
-def login():
-    return json_data(**{"message": "未登录", "code": state.USER_NOT_LOGIN})
+def login(request: Request, session: SessionDep, user_in: UserLogin):
+    user_obj = user.validate_login_info(session, user_in)
+    request.session['user_login_state'] = user_obj.to_dict()
+    return json_data(message="登录成功")
 
 
 @router.post('/logout')
 def logout(request: Request):
-    del request.session['user_login_state']
+    request.session['user_login_state'] = {}
     return json_data(message='退出成功')
 
 

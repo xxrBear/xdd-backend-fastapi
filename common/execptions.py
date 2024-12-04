@@ -16,4 +16,4 @@ async def validate_exception_handler(request: Request, exc: ValidateError):
     """
     处理 ValidateError 及其子类异常的方法
     """
-    return json_data(code=state.REQUEST_PARAMS_ERROR, description=exc.name)
+    return json_data(code=state.REQUEST_PARAMS_ERROR, message=exc.name)
