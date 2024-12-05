@@ -6,7 +6,7 @@ from sqlmodel import create_engine, SQLModel
 from models import *
 
 # 数据库文件的相对路径
-db_path = os.path.dirname(os.path.abspath(__file__)) + 'yudada-backend.db'
+db_path = os.path.dirname(os.path.abspath(__file__)) + '-yudada-backend.db'
 
 # 使用 SQLAlchemy 的 SQLite URL 格式
 SQLALCHEMY_DATABASE_URL = f"sqlite:///{db_path}"
