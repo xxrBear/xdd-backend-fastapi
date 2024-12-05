@@ -1,8 +1,11 @@
+from urllib.request import Request
+
 from sqlmodel import Session, select
 
 from common.execptions import ValidateError
+from common.resp import json_data
 from core.utils import encrypt_user_password
-from models.user import UserLogin, User, UserCreate
+from models.user import UserLogin, User, UserCreate, UserDelete
 
 
 def validate_login_info(session: Session, user_in: UserLogin):
@@ -55,3 +58,19 @@ def validate_register_info(session: Session, user_create: UserCreate):
     session.refresh(user_obj)
 
     return user_obj
+
+
+def delete_user_by_id(session: Session, user_del: UserDelete, request: Request):
+    sql = select(User).where(User.id == user_del.id).where(User.is_delete == False)
+    user_obj = session.exec(sql).first()
+    if not user_obj:
+        raise ValidateError('用户不存在')
+    user_obj.is_delete = True
+    session.commit()
+    session.refresh(user_obj)
+    if user_obj.id == request.session.get('user_login_state').get('id'):
+        request.session['user_login_state'] = {}
+        result = json_data(**{"code": 40100, "message": "未登录"})
+    else:
+        result = json_data(message='删除成功')
+    return result

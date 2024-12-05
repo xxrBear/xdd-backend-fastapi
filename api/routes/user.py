@@ -1,15 +1,13 @@
-from urllib import request
-
 from fastapi import APIRouter
 from sqlmodel import select
 from starlette.requests import Request
 
-from common import state
 from api.deps import SessionDep
-from common.execptions import ValidateError
+from common import state
 from common.resp import json_data
-from models.user import UserCreate, User, UserLogin, UserPage, UserDelete
 from crud import user
+from crud.user import delete_user_by_id
+from models.user import UserCreate, User, UserLogin, UserPage, UserDelete
 
 router = APIRouter()
 
@@ -71,13 +69,5 @@ def get_all_users(session: SessionDep, user_del: UserDelete, request: Request):
     :param request:
     :return:
     """
-    sql = select(User).where(User.id == user_del.id).where(User.is_delete == False)
-    user_obj = session.exec(sql).first()
-    if not user_obj:
-        raise ValidateError('用户不存在')
-    user_obj.is_delete = True
-    session.commit()
-    session.refresh(user_obj)
-    if user_obj.id == request.session.get('user_login_state').get('id'):
-        request.session['user_login_state'] = {}
-    return json_data(message='删除成功')
+    result = delete_user_by_id(session, user_del, request)
+    return result
