@@ -63,3 +63,12 @@ class UserLogin(SQLModel):
             'user_account': self.userAccount,
             'user_password': self.userPassword,
         }
+
+
+class UserPage(SQLModel):
+    current: int = Field(default=1, description='开始页')
+    pageSize: int = Field(default=10, description='总页数')
+
+
+class UserDelete(SQLModel):
+    id: int = Field(description='用户id')

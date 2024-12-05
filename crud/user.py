@@ -17,7 +17,8 @@ def validate_login_info(session: Session, user_in: UserLogin):
     user_password = user_info.get('user_password')
 
     encrypt_passwd = encrypt_user_password(user_password)
-    statement = select(User).where(User.user_account == user_account).where(User.user_password == encrypt_passwd)
+    statement = select(User).where(User.user_account == user_account).where(User.user_password == encrypt_passwd).where(
+        User.is_delete == False)
     user_obj = session.exec(statement).first()
     if user_obj:
         return user_obj
