@@ -1,3 +1,4 @@
+from fastapi.encoders import jsonable_encoder
 from sqlmodel import SQLModel, Field
 from typing import Optional
 from datetime import datetime
@@ -11,4 +12,29 @@ class Question(SQLModel, table=True):
     create_time: datetime = Field(default=datetime.now, description="创建时间")
     update_time: datetime = Field(default=datetime.now, sa_column_kwargs={"onupdate": datetime.now},
                                   description="更新时间")
-    is_delete: int = Field(default=0, description="是否删除")
+    is_delete: bool = Field(default=False, description="是否删除")
+
+    def to_dict(self):
+        fields = jsonable_encoder(self)
+        return {
+            "id": fields.get('id'),
+            "appId": fields.get('app_id'),
+            "userId": fields.get('user_id'),
+            "createTime": fields.get('create_time'),
+            "updateTime": fields.get('update_time'),
+            "isDelete": fields.get('is_delete'),
+            "questionContent": fields.get('question_content')
+        }
+
+class QuestionPub(SQLModel):
+    appId: Optional[int] = Field(default=0, description="APP ID")
+    pageSize: int = Field(description="应用 id")
+    current: int = Field(description="创建用户 id")
+
+
+class QuestionCreate(SQLModel):
+    id: int = Field(description="id")
+    questionContent: list = Field(default=[], description='问题')
+
+class QuestionDel(SQLModel):
+    id: int = Field(description="id")

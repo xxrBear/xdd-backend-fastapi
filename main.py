@@ -4,11 +4,12 @@ from starlette.middleware.sessions import SessionMiddleware
 
 from api.main import api_router
 from common.execptions import ValidateError, validate_exception_handler
-from common.middleware import UserLoginStateMiddleware
+from common.middleware import UserLoginStateMiddleware, CheckAdminMiddleware
 
 app = FastAPI()
 app.include_router(api_router)
 
+app.add_middleware(CheckAdminMiddleware)
 app.add_middleware(UserLoginStateMiddleware)
 app.add_middleware(
     CORSMiddleware,

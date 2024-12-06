@@ -167,5 +167,5 @@ def get_app_detail(app_id: int, session: SessionDep, request: Request):
 
     app_dict = app_obj.to_dict()
     user_data = request.session.get('user_login_state')
-    app_dict.update(user=user_data)
+    app_dict.update(user=user_data, userId=user_data.get('id'))
     return app_dict
