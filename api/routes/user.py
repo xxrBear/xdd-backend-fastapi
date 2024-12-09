@@ -62,7 +62,7 @@ def get_all_users(session: SessionDep, user_in: UserPage):
 
 
 @router.post('/delete')
-def get_all_users(session: SessionDep, user_del: UserDelete, request: Request):
+def delete_all_users(session: SessionDep, user_del: UserDelete, request: Request):
     """ 删除用户
     :param session:
     :param user_del:
