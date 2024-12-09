@@ -1,12 +1,11 @@
 import json
-import time
 
 from fastapi import APIRouter, Request
 from sqlmodel import select
 
 from api.deps import SessionDep
 from common.resp import json_data
-from common.util_func import generate_id
+from core.utils import generate_id
 from crud.user_answer import validate_answer_in
 from models import UserAnswer, App
 from models.user_answer import UserAnswerIn, UserAnswerDelete
@@ -62,6 +61,11 @@ def add_user_answer(session: SessionDep, request: Request, answer_in: UserAnswer
 
 @router.post('/list/page')
 def get_all_answer_list(session: SessionDep):
+    """
+    展示所有答案
+    :param session:
+    :return:
+    """
     sql = select(UserAnswer).where(UserAnswer.is_delete == False)
     answer_objs = session.exec(sql)
     result_list = []
@@ -82,7 +86,13 @@ def get_mine_answer_list(session: SessionDep, request: Request):
 
 
 @router.post('/delete')
-def delete_user_answer(session: SessionDep, request: Request, user_del: UserAnswerDelete):
+def delete_user_answer(session: SessionDep, user_del: UserAnswerDelete):
+    """
+    删除答案
+    :param session:
+    :param user_del:
+    :return:
+    """
     id_ = user_del.id
     sql = select(UserAnswer).where(UserAnswer.id == id_)
     answer_obj = session.exec(sql).first()

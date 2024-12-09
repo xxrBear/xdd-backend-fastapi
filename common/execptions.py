@@ -14,6 +14,17 @@ class ValidateError(Exception):
 
 async def validate_exception_handler(request: Request, exc: ValidateError):
     """
-    处理 ValidateError 及其子类异常的方法
+    统一处理 ValidateError 及其子类异常的方法
     """
     return json_data(code=state.REQUEST_PARAMS_ERROR, message=exc.name)
+
+
+def validate_request_exception(statement, message=''):
+    """
+    当 statement 为 True 时，抛出请求参数异常
+    :param statement:
+    :param message:
+    :return:
+    """
+    if statement:
+        raise ValidateError(message)

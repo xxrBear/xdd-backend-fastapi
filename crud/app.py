@@ -1,10 +1,10 @@
 from datetime import datetime
 
-from starlette.requests import Request
 from sqlmodel import select
+from starlette.requests import Request
 
 from api.deps import SessionDep
-from common.execptions import ValidateError
+from common.execptions import validate_request_exception
 from models import User
 from models.app import PageInfo, App, AppCreate, AppDelete, AppReview
 
@@ -18,8 +18,7 @@ def get_passed_app(session: SessionDep, page_info: PageInfo):
     """
     page_size = page_info.pageSize
 
-    if page_size > 20:
-        raise ValidateError('一次仅允许访问不超过20条数据')
+    validate_request_exception(page_size > 20, '一次仅允许访问不超过20条数据')
 
     # 找符合条件的 app
     statement = select(App).where(App.review_status == 1).where(App.is_delete == 0)
@@ -44,8 +43,7 @@ def get_passed_app(session: SessionDep, page_info: PageInfo):
 def get_all_app(session: SessionDep, page_info: PageInfo):
     page_size = page_info.pageSize
 
-    if page_size > 20:
-        raise ValidateError('一次仅允许访问不超过20条数据')
+    validate_request_exception(page_size > 20, '一次仅允许访问不超过20条数据')
 
     # 找出所以app
     statement = select(App).where(App.is_delete == 0)
@@ -77,8 +75,7 @@ def delete_app_by_id(session: SessionDep, app_del: AppDelete):
     app_id = app_del.id
     sql = select(App).where(App.id == app_id)
     app_obj = session.exec(sql).first()
-    if not app_obj:
-        raise ValidateError('应用不存在')
+    validate_request_exception(not app_obj, '应用不存在')
 
     app_obj.is_delete = 1
     session.commit()
@@ -99,13 +96,11 @@ def review_app_by_id(session: SessionDep, request: Request, app_review: AppRevie
     review_status = app_review.reviewStatus
     review_msg = app_review.reviewMessage
 
-    if review_status not in (2, 1):
-        raise ValidateError('审核状态异常')
+    validate_request_exception(review_status not in (2, 1), '审核状态异常')
 
     sql = select(App).where(App.id == app_id)
     app_obj = session.exec(sql).first()
-    if not app_obj:
-        raise ValidateError('应用不存在')
+    validate_request_exception(not app_obj, '应用不存在')
 
     user_info = request.session.get('user_login_state')
 
@@ -127,8 +122,7 @@ def check_app_info(app_in: AppCreate):
     app_name = app_in.appName
     app_desc = app_in.appDesc
 
-    if not all([app_name, app_desc]):
-        raise ValidateError('应用名或描述不能为空')
+    validate_request_exception(all([app_name, app_desc]), '应用名或描述不能为空')
 
 
 def create_app(session: SessionDep, request: Request, app_in: AppCreate):
@@ -162,8 +156,7 @@ def get_app_detail(app_id: int, session: SessionDep, request: Request):
     """
     sql = select(App).where(App.id == app_id)
     app_obj = session.exec(sql).first()
-    if not app_obj:
-        raise ValidateError('应用记录不存在')
+    validate_request_exception(not app_obj, '应用记录不存在')
 
     app_dict = app_obj.to_dict()
     user_data = request.session.get('user_login_state')
