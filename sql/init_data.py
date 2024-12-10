@@ -10,7 +10,7 @@ VALUES (1, '自定义MBTI性格测试', '测试性格', 'https://cdn.jsdelivr.ne
 INSERT INTO app (id, app_name, app_desc, app_icon, app_type, scoring_strategy, review_status, review_message,
                  reviewer_id,
                  review_time, user_id, create_time, update_time, is_delete)
-VALUES (2, '自定义得分测试', '测试得分', 'https://cdn.jsdelivr.net/gh/xxrBear/image/Hugo/202412052117296.jpg', 0, 0, 1,
+VALUES (2, '自定义得分测试', '看看你熟悉多少首都', 'https://cdn.jsdelivr.net/gh/xxrBear/image/Hugo/202412052126275.jpg', 0, 0, 1,
         null, null, null, 1, '2024-04-25 11:39:30',
         '2024-05-09 15:09:53', 0);
 
@@ -22,19 +22,12 @@ VALUES (3, 'AI MBTI 性格测试', '快来测测你的 MBTI',
         '2024-04-26 16:38:12',
         '2024-05-09 15:09:53', 0);
 
-INSERT INTO app (id, app_name, app_desc, app_icon, app_type, scoring_strategy, review_status, review_message,
-                 reviewer_id,
-                 review_time, user_id, create_time, update_time, is_delete)
-VALUES (4, 'AI 得分测试', '看看你熟悉多少首都', 'https://cdn.jsdelivr.net/gh/xxrBear/image/Hugo/202412052117296.jpg', 0,
-        1, 1, null, null, null, 1, '2024-04-26 16:38:56',
-        '2024-05-09 15:09:53', 0);
-
 
 INSERT INTO user (id, user_account, user_password, union_id, mp_open_id, user_name, user_avatar, user_profile,
                   user_role,
                   create_time, update_time, is_delete)
-VALUES (1, 'admin', 'ef797c8118f02dfb649607dd5d3f8c7623048c9c063d532cc95c5ed7a898a64f', null, null, '熊皮',
-        'https://k.sinaimg.cn/n/sinakd20110/560/w1080h1080/20230930/915d-f3d7b580c33632b191e19afa0a858d31.jpg/w700d1q75cms.jpg',
+VALUES (1, 'admin', '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', null, null, '熊皮',
+        'https://cdn.jsdelivr.net/gh/xxrBear/image/Hugo/202411291606062.png',
         '欢迎来编程导航学习', 'admin', '2024-05-09 11:13:13', '2024-05-09 15:07:48', 0);
 
 INSERT INTO question (id, question_content, app_id, user_id, create_time, update_time, is_delete)
