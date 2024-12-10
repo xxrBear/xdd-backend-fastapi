@@ -1,13 +1,12 @@
-import json
-
 from fastapi import APIRouter, Request
 from sqlmodel import select
 
 from api.deps import SessionDep
 from common.resp import json_data
+from core.score import PickScoreType
 from core.utils import generate_id
-from crud.user_answer import validate_answer_in
-from models import UserAnswer, App
+from crud.user_answer import validate_answer_in, create_user_answer
+from models import UserAnswer
 from models.user_answer import UserAnswerIn, UserAnswerDelete
 
 router = APIRouter()
@@ -35,28 +34,33 @@ def add_user_answer(session: SessionDep, request: Request, answer_in: UserAnswer
     # 参数检验
     validate_answer_in(answer_in, session)
 
-    # 添加进数据库
-    app_id = answer_in.appId
-    sql = select(App).where(App.id == app_id)
-    app_obj = session.exec(sql).first()
-    app_dict = app_obj.to_dict()
-    app_id = app_dict.pop('id')
-    app_dict['appId'] = app_id
+    # 添加用户答题记录
+    answer_obj, app_obj = create_user_answer(session, request, answer_in)
 
-    answer_dict = answer_in.to_dict()
-    answer_dict.update(app_dict)
-    choices = json.dumps(answer_dict['choices'])
-    answer_dict['choices'] = choices
+    # 根据不同策略打分
+    score_obj = PickScoreType(score_type=app_obj.app_type).choose
+    answer_obj_id = score_obj.do_score(app_obj.id, answer_obj, session)
+
+    return json_data(data=answer_obj_id)
+
+
+@router.get('/get/vo')
+def get_each_answer(id: int, session: SessionDep, request: Request):
+    """
+    展示一个答案
+    :param session:
+    :param id:
+    :param request:
+    :return:
+    """
+    sql = select(UserAnswer).where(UserAnswer.is_delete == False).where(UserAnswer.id == id)
+    answer_obj = session.exec(sql).first()
+    answer_dict = answer_obj.to_dict()
 
     user_pub = request.session.get('user_login_state')
-    user_id = user_pub.get('id')
-    answer_dict.update({'user_id': user_id, 'user': user_pub})
-    answer_obj = UserAnswer(**answer_dict)
+    answer_dict.update({'user': user_pub})
 
-    session.add(answer_obj)
-    session.commit()
-    session.refresh(answer_obj)
-    return json_data()
+    return json_data(data=answer_dict)
 
 
 @router.post('/list/page')
