@@ -6,7 +6,7 @@ from typing import Annotated
 from fastapi import Depends
 from sqlmodel import Session
 
-from core.init_db import engine
+from init_db import engine
 
 
 def get_db() -> Generator[Session, None, None]:
