@@ -38,8 +38,8 @@ def add_user_answer(session: SessionDep, request: Request, answer_in: UserAnswer
     answer_obj, app_obj = create_user_answer(session, request, answer_in)
 
     # 根据不同策略打分
-    score_obj = PickScoreType(score_type=app_obj.app_type).choose
-    answer_obj_id = score_obj.do_score(app_obj.id, answer_obj, session)
+    score_obj = PickScoreType(score_type=app_obj.app_type, scoring_strategy=app_obj.scoring_strategy).choose
+    answer_obj_id = score_obj.do_score(app_obj, answer_obj, session)
 
     return json_data(data=answer_obj_id)
 

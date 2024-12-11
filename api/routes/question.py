@@ -1,13 +1,17 @@
 import json
+import re
 
 from fastapi import APIRouter
 from sqlmodel import select
 from starlette.requests import Request
 
 from api.deps import SessionDep
+from common import prompt
 from common.resp import json_data
+from core.ai import send_sync_ai_message
+from crud.question import adapter_user_prompt
 from models import Question, App
-from models.question import QuestionPub, QuestionCreate, QuestionDel
+from models.question import QuestionPub, QuestionCreate, QuestionDel, QuestionAI
 
 router = APIRouter()
 
@@ -112,3 +116,33 @@ async def delete_question(session: SessionDep, q_del: QuestionDel):
         session.refresh(q_obj)
 
     return json_data()
+
+
+@router.post("/ai_generate")
+async def ai_generate_question(session: SessionDep, q_ai: QuestionAI):
+    """
+    AI 自动生成题目
+    :param session:
+    :param q_ai:
+    :return:
+    """
+    user_prompt = adapter_user_prompt(session, q_ai)
+    system_prompt = prompt.SYSTEM_OUT_PROMPT
+
+    messages = [
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": user_prompt},
+    ]
+    resp = send_sync_ai_message(messages)
+
+    # 正则表达式匹配最外层的 JSON 数组
+    json_pattern = r"\[(.*)\]"  # 捕获最外层的 [ 和 ]，并提取内容
+
+    # 搜索最外层的 JSON 数组
+    match = re.search(json_pattern, resp, re.DOTALL)
+
+    if match:
+        data = json.loads(match.group())  # 提取匹配到的完整 JSON 数据
+    else:
+        data = []
+    return json_data(data=data)

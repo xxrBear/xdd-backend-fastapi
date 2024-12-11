@@ -26,6 +26,7 @@ class Question(SQLModel, table=True):
             "questionContent": fields.get('question_content')
         }
 
+
 class QuestionPub(SQLModel):
     appId: Optional[int] = Field(default=0, description="APP ID")
     pageSize: int = Field(description="应用 id")
@@ -36,5 +37,12 @@ class QuestionCreate(SQLModel):
     id: int = Field(description="id")
     questionContent: list = Field(default=[], description='问题')
 
+
 class QuestionDel(SQLModel):
     id: int = Field(description="id")
+
+
+class QuestionAI(SQLModel):
+    appId: int = Field(description="APP ID")
+    optionNumber: int = Field(description='选项数量')
+    questionNumber: int = Field(description='题目数量')
