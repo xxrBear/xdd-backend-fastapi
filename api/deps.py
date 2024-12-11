@@ -1,11 +1,13 @@
 """ 依赖设置
 """
 from collections.abc import Generator
+from functools import lru_cache
 from typing import Annotated
 
 from fastapi import Depends
 from sqlmodel import Session
 
+from common.settings import Settings
 from init_db import engine
 
 
@@ -15,3 +17,11 @@ def get_db() -> Generator[Session, None, None]:
 
 
 SessionDep = Annotated[Session, Depends(get_db)]
+
+
+@lru_cache
+def get_settings():
+    return Settings()
+
+
+SettingsDep = Annotated[Settings, Depends(get_settings)]
