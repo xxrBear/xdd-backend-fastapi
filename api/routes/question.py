@@ -3,12 +3,14 @@ import re
 
 from fastapi import APIRouter
 from sqlmodel import select
+from sse_starlette import EventSourceResponse
 from starlette.requests import Request
 
-from api.deps import SessionDep
+from api.deps import SessionDep, SettingsDep
 from common import prompt
+from common.prompt import USER_OUT_PROMPT
 from common.resp import json_data
-from core.ai import send_sync_ai_message
+from core.ai import send_sync_ai_message, send_sse_ai_message
 from crud.question import adapter_user_prompt
 from models import Question, App
 from models.question import QuestionPub, QuestionCreate, QuestionDel, QuestionAI
@@ -146,3 +148,49 @@ async def ai_generate_question(session: SessionDep, q_ai: QuestionAI):
     else:
         data = []
     return json_data(data=data)
+
+
+@router.get("/ai_generate/sse")
+async def ai_generate_sse(appId: int, optionNumber: int, questionNumber: int, session: SessionDep, settings: SettingsDep):
+
+    if settings.zp_call_num >= 50:
+        settings.zp_call_num += 1
+        return json_data(message='AI使用次数超过上限')
+
+    sql = select(App).where(App.id == appId)
+    app_obj = session.exec(sql).first()
+
+    user_prompt = USER_OUT_PROMPT.format(app_obj.app_name, app_obj.app_desc, questionNumber, optionNumber)
+    system_prompt = prompt.SYSTEM_OUT_PROMPT
+    messages = [
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": user_prompt},
+    ]
+    resp = send_sse_ai_message(messages)
+
+    data = ''
+    count = 0
+
+    async def event_generator(resp):
+
+        while True:
+            nonlocal data, count
+
+            for first in resp:
+                value = first.choices[0].delta.content.replace(' ', '').replace('\n', '')
+                for second in value:
+                    if second == '{':
+                        count += 1
+                    if count > 0:
+                        data += second
+                    if second == '}':
+                        count -= 1
+                    if count == 0 and data:
+                        # 当JSON结构完整时，发送数据块
+                        yield data  # SSE 格式
+                        data = ''  # 重置数据
+                        count = 0
+            break
+        yield "Stream completed"
+
+    return EventSourceResponse(event_generator(resp))

@@ -4,7 +4,7 @@ from common import state
 from common.resp import json_data
 
 OPEN_URL = ['/docs', '/openapi.json', '/redoc']
-SKIP_URL = ['/api/user/register', '/api/user/login', '/', '/api/user/get/login']
+SKIP_URL = ['/api/user/register', '/api/user/login', '/', '/api/user/get/login', '/api/question/ai_generate/sse']
 ADMIN_URL = []
 
 
