@@ -6,17 +6,17 @@ from starlette.requests import Request
 from api.deps import SessionDep
 from common.execptions import validate_request_exception
 from models import User
-from models.app import PageInfo, App, AppCreate, AppDelete, AppReview
+from models.app import AppSelect, App, AppCreate, AppDelete, AppReview
 
 
-def get_passed_app(session: SessionDep, page_info: PageInfo):
+def get_passed_app(session: SessionDep, se: AppSelect):
     """
     获取所有 "已过审" "未删除" APP 供预览
     :param session:
     :param page_info:
     :return:
     """
-    page_size = page_info.pageSize
+    page_size = se.pageSize
 
     validate_request_exception(page_size > 20, '一次仅允许访问不超过20条数据')
 
@@ -40,13 +40,17 @@ def get_passed_app(session: SessionDep, page_info: PageInfo):
     return records
 
 
-def get_all_app(session: SessionDep, page_info: PageInfo):
-    page_size = page_info.pageSize
+def get_all_app(session: SessionDep, se: AppSelect):
+    page_size = se.pageSize
 
     validate_request_exception(page_size > 20, '一次仅允许访问不超过20条数据')
 
     # 找出所以app
     statement = select(App).where(App.is_delete == 0)
+    if se.appName:
+        statement = statement.where(App.app_name.like('%{}%'.format(se.appName)))
+    if se.appDesc:
+        statement = statement.where(App.app_desc.like('%{}%'.format(se.appDesc)))
     app_objs = session.exec(statement).all()
 
     # 处理数据，返回

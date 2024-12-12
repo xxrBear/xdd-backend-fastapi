@@ -45,8 +45,8 @@ class SRIn(SQLModel):
     pageSize: int = Field(description='结束页')
     resultName: str = Field(default='', description='名称')
     resultDesc: str = Field(default='', description='用户描述')
-    appId: int | None = Field(default=None, description='APP ID')
-    userId: int | None = Field(default=None, description='User ID')
+    appId: int | str = Field(default=0, description='APP ID')
+    userId: int | str = Field(default=0, description='User ID')
     sortField: str | None = Field(default='id', description='排序字段')
     sortOrder: str | None = Field(default='', description='排序')
 

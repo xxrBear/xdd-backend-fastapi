@@ -3,35 +3,40 @@ from starlette.requests import Request
 
 from api.deps import SessionDep
 from common.resp import json_data
+from core.utils import adapter_records_info
 from crud.app import check_app_info, create_app, get_app_detail, get_passed_app, get_all_app, delete_app_by_id, \
     review_app_by_id
-from models.app import PageInfo, App, AppCreate, AppDelete, AppReview
+from models.app import AppCreate, AppDelete, AppReview, AppSelect
 
 router = APIRouter()
 
 
 @router.post('/list/page/vo')
-def get_app_page(session: SessionDep, page_info: PageInfo):
+def get_app_page(session: SessionDep, se: AppSelect):
     """
     获取所有 "已过审" "未删除" APP 供预览
     :param session:
     :param page_info:
     :return:
     """
-    records = get_passed_app(session, page_info)
-    return json_data(data={'records': records})
+    records = get_passed_app(session, se)
+    data = adapter_records_info(records, se.pageSize)
+    data.update({'records': records})
+    return json_data(data=data)
 
 
 @router.post('/list/page')
-def get_list_page(session: SessionDep, page_info: PageInfo):
+def get_list_page(session: SessionDep, se: AppSelect):
     """
     获取所有 APP
     :param session:
     :param page_info:
     :return:
     """
-    records = get_all_app(session, page_info)
-    return json_data(data={'records': records})
+    records = get_all_app(session, se)
+    data = adapter_records_info(records, se.pageSize)
+    data.update({'records': records})
+    return json_data(data=data)
 
 
 @router.post('/add')

@@ -58,7 +58,11 @@ class UserAnswerIn(SQLModel):
 
 class UserAnswerSelect(SQLModel):
     current: int = Field(default=1, description='当前页数')
-    pageSize: int = Field(default=1, description='总页数')
+    pageSize: int = Field(default=10, description='总页数')
+    resultName: str = Field(default='', description='结果名称')
+    resultDesc: str = Field(default='', description='结果描述')
+    appId: int | str = Field(default=0, description='appId')
+    userId: int = Field(default=0, description='appId')
 
 
 class UserAnswerDelete(SQLModel):

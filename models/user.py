@@ -1,4 +1,5 @@
 from datetime import datetime
+from email.policy import default
 
 from fastapi.encoders import jsonable_encoder
 from sqlmodel import SQLModel, Field
@@ -68,6 +69,9 @@ class UserLogin(SQLModel):
 class UserPage(SQLModel):
     current: int = Field(default=1, description='开始页')
     pageSize: int = Field(default=10, description='总页数')
+    userName: str = Field(default='', description='用户名')
+    userDesc: str = Field(default='', description='用户描述')
+    userProfile: str = Field(default='', description='')
 
 
 class UserDelete(SQLModel):

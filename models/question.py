@@ -1,3 +1,5 @@
+from email.policy import default
+
 from fastapi.encoders import jsonable_encoder
 from sqlmodel import SQLModel, Field
 from typing import Optional
@@ -28,9 +30,10 @@ class Question(SQLModel, table=True):
 
 
 class QuestionPub(SQLModel):
-    appId: Optional[int] = Field(default=0, description="APP ID")
-    pageSize: int = Field(description="应用 id")
-    current: int = Field(description="创建用户 id")
+    appId:int|str = Field(default=0, description="APP ID")
+    pageSize: int = Field(default=10, description="应用 id")
+    userId: int|str = Field(default=0, description="userId")
+    current: int = Field(default=1, description="创建用户 id")
 
 
 class QuestionCreate(SQLModel):

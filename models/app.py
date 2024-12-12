@@ -39,10 +39,12 @@ class App(SQLModel, table=True):
         }
 
 
-class PageInfo(SQLModel):
+class AppSelect(SQLModel):
     current: int = Field(default=1)
     pageSize: int = Field(default=12)
     reviewStatus: int = Field(default=1)
+    appName: str = Field(default='')
+    appDesc: str = Field(default='')
 
 
 class AppCreate(SQLModel):

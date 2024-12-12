@@ -4,10 +4,10 @@ from sqlmodel import select
 from api.deps import SessionDep
 from common.resp import json_data
 from core.score import PickScoreType
-from core.utils import generate_id
+from core.utils import generate_id, adapter_records_info
 from crud.user_answer import validate_answer_in, create_user_answer
 from models import UserAnswer
-from models.user_answer import UserAnswerIn, UserAnswerDelete
+from models.user_answer import UserAnswerIn, UserAnswerDelete, UserAnswerSelect
 
 router = APIRouter()
 
@@ -64,29 +64,50 @@ def get_each_answer(id: int, session: SessionDep, request: Request):
 
 
 @router.post('/list/page')
-def get_all_answer_list(session: SessionDep):
+def get_all_answer_list(session: SessionDep, se: UserAnswerSelect):
     """
     展示所有答案
     :param session:
     :return:
     """
     sql = select(UserAnswer).where(UserAnswer.is_delete == False)
-    answer_objs = session.exec(sql)
+    if se.appId:
+        sql = sql.where(UserAnswer.app_id == se.appId)
+    if se.resultDesc:
+        sql = sql.where(UserAnswer.result_desc.like('%{}%'.format(se.resultDesc)))
+    if se.resultName:
+        sql = sql.where(UserAnswer.result_name.like('%{}%'.format(se.resultName)))
+    if se.userId:
+        sql = sql.where(UserAnswer.user_id == se.userId)
+
+    answer_objs = session.exec(sql).all()
     result_list = []
     for answer_obj in answer_objs:
         result_list.append(answer_obj.to_dict())
-    return json_data(data={'records': result_list})
+    data = adapter_records_info(answer_objs, 10)
+    data['records'] = result_list
+    return json_data(data=data)
 
 
 @router.post('/my/list/page/vo')
-def get_mine_answer_list(session: SessionDep, request: Request):
+def get_mine_answer_list(session: SessionDep, request: Request, se: UserAnswerSelect):
     user_pub = request.session.get('user_login_state')
     sql = select(UserAnswer).where(UserAnswer.is_delete == False).where(UserAnswer.user_id == user_pub.get('id'))
-    answer_objs = session.exec(sql)
+
+    if se.appId:
+        sql = sql.where(UserAnswer.app_id == se.appId)
+    if se.resultDesc:
+        sql = sql.where(UserAnswer.result_desc.like('%{}%'.format(se.resultDesc)))
+    if se.resultName:
+        sql = sql.where(UserAnswer.result_name.like('%{}%'.format(se.resultName)))
+
+    answer_objs = session.exec(sql).all()
     result_list = []
     for answer_obj in answer_objs:
         result_list.append(answer_obj.to_dict())
-    return json_data(data={'records': result_list})
+    data = adapter_records_info(answer_objs, se.pageSize)
+    data['records'] = result_list
+    return json_data(data=data)
 
 
 @router.post('/delete')

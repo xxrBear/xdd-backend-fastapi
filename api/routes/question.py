@@ -11,6 +11,7 @@ from common import prompt
 from common.prompt import USER_OUT_PROMPT
 from common.resp import json_data
 from core.ai import send_sync_ai_message, send_sse_ai_message
+from core.utils import adapter_records_info
 from crud.question import adapter_user_prompt
 from models import Question, App
 from models.question import QuestionPub, QuestionCreate, QuestionDel, QuestionAI
@@ -79,7 +80,7 @@ async def create_question(session: SessionDep, request: Request, ques_create: Qu
 
 
 @router.post("/list/page")
-async def list_question(session: SessionDep):
+async def list_question(session: SessionDep, ques_pub: QuestionPub):
     """
     展示题目
     :param session:
@@ -90,14 +91,19 @@ async def list_question(session: SessionDep):
     Q = Question
     # 查看题目
     sql = select(Q).where(Q.is_delete == False)
+    if ques_pub.appId:
+        sql = sql.where(Q.app_id == ques_pub.appId)
+    if ques_pub.userId:
+        sql = sql.where(Q.user_id == ques_pub.userId)
     question_objs = session.exec(sql).all()
 
     # 封装返回结果
     records = []
     for que in question_objs:
         records.append(que.to_dict())
-
-    return json_data(data={'records': records})
+    data = adapter_records_info(records, ques_pub.pageSize)
+    data.update({'records': records})
+    return json_data(data=data)
 
 
 @router.post("/delete")
@@ -151,8 +157,8 @@ async def ai_generate_question(session: SessionDep, q_ai: QuestionAI):
 
 
 @router.get("/ai_generate/sse")
-async def ai_generate_sse(appId: int, optionNumber: int, questionNumber: int, session: SessionDep, settings: SettingsDep):
-
+async def ai_generate_sse(appId: int, optionNumber: int, questionNumber: int, session: SessionDep,
+                          settings: SettingsDep):
     if settings.zp_call_num >= 50:
         settings.zp_call_num += 1
         return json_data(message='AI使用次数超过上限')

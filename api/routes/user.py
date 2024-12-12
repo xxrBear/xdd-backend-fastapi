@@ -5,6 +5,7 @@ from starlette.requests import Request
 from api.deps import SessionDep
 from common import state
 from common.resp import json_data
+from core.utils import adapter_records_info
 from crud import user
 from crud.user import delete_user_by_id
 from models.user import UserCreate, User, UserLogin, UserPage, UserDelete
@@ -57,8 +58,15 @@ def get_all_users(session: SessionDep, user_in: UserPage):
     :return:
     """
     sql = select(User).where(User.is_delete == False).offset(user_in.current - 1).limit(user_in.pageSize)
+
+    if user_in.userName:
+        sql = sql.where(User.user_name.like('%{}%'.format(user_in.userName)))
+    if user_in.userProfile:
+        sql = sql.where(User.user_profile.like('%{}%'.format(user_in.userProfile)))
     user_objs = session.exec(sql).all()
-    return json_data(data={'records': [user.to_dict() for user in user_objs]})
+    data = adapter_records_info(user_objs, user_in.pageSize)
+    data.update({'records': [user.to_dict() for user in user_objs]})
+    return json_data(data=data)
 
 
 @router.post('/delete')
