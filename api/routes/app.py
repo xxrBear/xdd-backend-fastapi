@@ -1,4 +1,5 @@
 from fastapi import APIRouter
+from sqlalchemy import text
 from starlette.requests import Request
 
 from api.deps import SessionDep
@@ -88,3 +89,43 @@ def get_app_detail_by_id(id: int, session: SessionDep, request: Request):
     """
     app_detail = get_app_detail(id, session, request)
     return json_data(data=app_detail)
+
+
+@router.get('/statistic/answer_count')
+def answer_count(session: SessionDep):
+    """
+    删除答案
+    :param session:
+    :param user_del:
+    :return:
+    """
+    sql = """
+        select app_id appId, count(user_id) as answerCount from user_answer
+        group by app_id order by answerCount desc limit 10;
+    """
+    result = session.execute(text(sql))
+    data = []
+    if result:
+        data = [{'appId': i.appId, 'answerCount': i.answerCount} for i in result]
+    return json_data(data=data)
+
+
+@router.get('/statistic/answer_result_count')
+def answer_count(appId: int, session: SessionDep):
+    """
+    删除答案
+    :param appId:
+    :param session:
+    :return:
+    """
+    data = []
+
+    if appId:
+        sql = """
+            select result_name resultName, count(user_id) as resultCount from user_answer where appId = {}
+            group by resultName order by resultCount desc;
+        """.format(appId)
+        result = session.execute(text(sql))
+        if result:
+            data = [{'resultName': i.resultName, 'resultCount': i.resultCount} for i in result]
+    return json_data(data=data)
