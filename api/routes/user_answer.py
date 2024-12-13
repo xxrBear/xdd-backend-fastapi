@@ -13,7 +13,7 @@ router = APIRouter()
 
 
 @router.get('/generate/id')
-def generate_answer_id():
+async def generate_answer_id():
     """
     自动生成 用户答案 ID
     :return:
@@ -23,7 +23,7 @@ def generate_answer_id():
 
 
 @router.post('/add')
-def add_user_answer(session: SessionDep, request: Request, answer_in: UserAnswerIn):
+async def add_user_answer(session: SessionDep, request: Request, answer_in: UserAnswerIn):
     """
     添加用户答案
     :param session:
@@ -45,7 +45,7 @@ def add_user_answer(session: SessionDep, request: Request, answer_in: UserAnswer
 
 
 @router.get('/get/vo')
-def get_each_answer(id: int, session: SessionDep, request: Request):
+async def get_each_answer(id: int, session: SessionDep, request: Request):
     """
     展示一个答案
     :param session:
@@ -64,7 +64,7 @@ def get_each_answer(id: int, session: SessionDep, request: Request):
 
 
 @router.post('/list/page')
-def get_all_answer_list(session: SessionDep, se: UserAnswerSelect):
+async def get_all_answer_list(session: SessionDep, se: UserAnswerSelect):
     """
     展示所有答案
     :param session:
@@ -90,7 +90,7 @@ def get_all_answer_list(session: SessionDep, se: UserAnswerSelect):
 
 
 @router.post('/my/list/page/vo')
-def get_mine_answer_list(session: SessionDep, request: Request, se: UserAnswerSelect):
+async def get_mine_answer_list(session: SessionDep, request: Request, se: UserAnswerSelect):
     user_pub = request.session.get('user_login_state')
     sql = select(UserAnswer).where(UserAnswer.is_delete == False).where(UserAnswer.user_id == user_pub.get('id'))
 
@@ -111,7 +111,7 @@ def get_mine_answer_list(session: SessionDep, request: Request, se: UserAnswerSe
 
 
 @router.post('/delete')
-def delete_user_answer(session: SessionDep, user_del: UserAnswerDelete):
+async def delete_user_answer(session: SessionDep, user_del: UserAnswerDelete):
     """
     删除答案
     :param session:

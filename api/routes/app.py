@@ -13,7 +13,7 @@ router = APIRouter()
 
 
 @router.post('/list/page/vo')
-def get_app_page(session: SessionDep, se: AppSelect):
+async def get_app_page(session: SessionDep, se: AppSelect):
     """
     获取所有 "已过审" "未删除" APP 供预览
     :param session:
@@ -27,7 +27,7 @@ def get_app_page(session: SessionDep, se: AppSelect):
 
 
 @router.post('/list/page')
-def get_list_page(session: SessionDep, se: AppSelect):
+async def get_list_page(session: SessionDep, se: AppSelect):
     """
     获取所有 APP
     :param session:
@@ -41,7 +41,7 @@ def get_list_page(session: SessionDep, se: AppSelect):
 
 
 @router.post('/add')
-def add_app(session: SessionDep, request: Request, app_in: AppCreate):
+async def add_app(session: SessionDep, request: Request, app_in: AppCreate):
     """
     添加 APP
     :param session:
@@ -55,7 +55,7 @@ def add_app(session: SessionDep, request: Request, app_in: AppCreate):
 
 
 @router.post('/delete')
-def delete_app(session: SessionDep, app_del: AppDelete):
+async def delete_app(session: SessionDep, app_del: AppDelete):
     """
     删除 APP
     :param session:
@@ -67,7 +67,7 @@ def delete_app(session: SessionDep, app_del: AppDelete):
 
 
 @router.post('/review')
-def review_app(session: SessionDep, request: Request, app_review: AppReview):
+async def review_app(session: SessionDep, request: Request, app_review: AppReview):
     """
     :param session:
     :param request:
@@ -79,7 +79,7 @@ def review_app(session: SessionDep, request: Request, app_review: AppReview):
 
 
 @router.get('/get/vo')
-def get_app_detail_by_id(id: int, session: SessionDep, request: Request):
+async def get_app_detail_by_id(id: int, session: SessionDep, request: Request):
     """
     查看单一 APP 详情
     :param id:
@@ -92,7 +92,7 @@ def get_app_detail_by_id(id: int, session: SessionDep, request: Request):
 
 
 @router.get('/statistic/answer_count')
-def answer_count(session: SessionDep):
+async def answer_count(session: SessionDep):
     """
     删除答案
     :param session:
@@ -111,7 +111,7 @@ def answer_count(session: SessionDep):
 
 
 @router.get('/statistic/answer_result_count')
-def answer_count(appId: int, session: SessionDep):
+async def answer_count(appId: int, session: SessionDep):
     """
     删除答案
     :param appId:

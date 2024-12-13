@@ -15,7 +15,7 @@ router = APIRouter()
 
 
 @router.post('/list/page')
-def get_scoring_result(session: SessionDep, sr_in: SRIn):
+async def get_scoring_result(session: SessionDep, sr_in: SRIn):
     """
     获取所有得分结果
     :param session:
@@ -48,7 +48,7 @@ def get_scoring_result(session: SessionDep, sr_in: SRIn):
 
 
 @router.post('/list/page/vo')
-def get_scoring_result(session: SessionDep, sr_in: SRIn):
+async def get_scoring_result(session: SessionDep, sr_in: SRIn):
     """
     获取所有得分结果
     :param session:
@@ -81,7 +81,7 @@ def get_scoring_result(session: SessionDep, sr_in: SRIn):
 
 
 @router.post('/edit')
-def edit_scoring_result(session: SessionDep, sr_edit: SREdit):
+async def edit_scoring_result(session: SessionDep, sr_edit: SREdit):
     # validate_sr_edit_info(sr_edit)
 
     sr_dict = jsonable_encoder(sr_edit.to_dict())
@@ -97,7 +97,7 @@ def edit_scoring_result(session: SessionDep, sr_edit: SREdit):
 
 
 @router.post('/delete')
-def delete_scoring_result(session: SessionDep, sr_del: SRDelete):
+async def delete_scoring_result(session: SessionDep, sr_del: SRDelete):
     # validate_sr_edit_info(sr_edit)
 
     id_ = sr_del.id
@@ -112,7 +112,7 @@ def delete_scoring_result(session: SessionDep, sr_del: SRDelete):
 
 
 @router.post('/add')
-def add_scoring_result(session: SessionDep, request: Request, sr_create: SRCreate):
+async def add_scoring_result(session: SessionDep, request: Request, sr_create: SRCreate):
     # validate_sr_edit_info(sr_edit)
     sr_dict = sr_create.to_dict()
     sr_dict.update({'user_id': request.session.get('user_login_state').get('id')})
