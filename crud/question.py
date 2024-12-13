@@ -17,5 +17,6 @@ def adapter_user_prompt(session: SessionDep, q_ai: QuestionAI):
     sql = select(App).where(App.id == app_id)
     app_obj = session.exec(sql).first()
 
-    user_prompt = prompt.USER_OUT_PROMPT.format(app_obj.app_name, app_obj.app_desc, q_ai.questionNumber, q_ai.optionNumber)
+    user_prompt = prompt.USER_OUT_PROMPT.format(app_obj.app_name, app_obj.app_desc, q_ai.questionNumber,
+                                                q_ai.optionNumber)
     return user_prompt

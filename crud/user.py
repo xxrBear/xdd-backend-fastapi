@@ -60,6 +60,13 @@ def validate_register_info(session: Session, user_create: UserCreate):
 
 
 def delete_user_by_id(session: Session, user_del: UserDelete, request: Request):
+    """
+    通过 id 逻辑删除用户
+    :param session:
+    :param user_del:
+    :param request:
+    :return:
+    """
     sql = select(User).where(User.id == user_del.id).where(User.is_delete == False)
     user_obj = session.exec(sql).first()
     validate_request_exception(not user_obj, '用户不存在')
