@@ -1,5 +1,4 @@
 from datetime import datetime
-from email.policy import default
 
 from fastapi.encoders import jsonable_encoder
 from sqlmodel import SQLModel, Field
