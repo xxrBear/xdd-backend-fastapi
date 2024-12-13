@@ -7,7 +7,7 @@ from typing import Annotated
 from fastapi import Depends
 from sqlmodel import Session
 
-from common.settings import Settings
+from core.settings import Settings
 from init_db import engine
 
 
