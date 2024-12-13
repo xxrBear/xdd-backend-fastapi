@@ -122,7 +122,7 @@ async def answer_count(appId: int, session: SessionDep):
 
     if appId:
         sql = """
-            select result_name resultName, count(user_id) as resultCount from user_answer where appId = {}
+            select result_name resultName, count(user_id) as resultCount from user_answer where app_id = {}
             group by resultName order by resultCount desc;
         """.format(appId)
         result = session.execute(text(sql))
