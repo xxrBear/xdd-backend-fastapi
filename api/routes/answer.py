@@ -5,7 +5,7 @@ from api.deps import SessionDep
 from common.resp import json_data
 from core.score import PickScoreType
 from core.utils import generate_id, adapter_records_info
-from crud.user_answer import validate_answer_in, create_user_answer
+from crud.answer import validate_answer_in, create_user_answer
 from models import UserAnswer
 from models.user_answer import UserAnswerIn, UserAnswerDelete, UserAnswerSelect
 
