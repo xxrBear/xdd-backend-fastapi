@@ -6,7 +6,7 @@ from starlette.requests import Request
 from api.deps import SessionDep
 from common.execptions import validate_request_exception
 from models import UserAnswer, App
-from models.user_answer import UserAnswerIn
+from models.answer import UserAnswerIn
 
 
 def validate_answer_in(user_answer: UserAnswerIn, session: SessionDep):
